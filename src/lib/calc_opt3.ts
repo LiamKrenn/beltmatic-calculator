@@ -119,7 +119,7 @@ export function leastSteps(target: number, max_src: number, allowedOperators: st
 					if (backwardVisited.has(newValue)) {
 						const forwardPath = reconstructPath(newNode, true);
 						const backwardNode = backwardVisited.get(newValue)!;
-						const backwardPath = reconstructPath(backwardNode, false).reverse();
+						const backwardPath = reconstructPath(backwardNode, false);
 						console.log('Calculation count: ' + calc_count);
 						return forwardPath.concat(backwardPath);
 					}
