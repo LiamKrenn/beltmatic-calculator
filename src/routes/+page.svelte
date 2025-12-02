@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { leastSteps as leastStepsReuse } from '$lib/calc_opt2';
 	import { leastSteps } from '$lib/calc_opt3';
-	import { RefreshCw } from 'lucide-svelte';
+	import { RefreshCw, X, Plus } from 'lucide-svelte';
 
 	let targetNumber: any;
 	let highestExtractionSource: any;
@@ -14,8 +14,31 @@
 	};
 	let reuse_generated_values = false;
 	let calculating = false;
+	let customNumbers: number[] = [];
+	let newCustomNumber: any = '';
 
 	let result: any[] = [];
+
+	function addCustomNumber() {
+		const inputs = newCustomNumber.toString().split(';');
+		const validNumbers: number[] = [];
+
+		for (const input of inputs) {
+			const num = parseInt(input.trim());
+			if (!isNaN(num) && num > 0 && !customNumbers.includes(num) && !validNumbers.includes(num)) {
+				validNumbers.push(num);
+			}
+		}
+
+		if (validNumbers.length > 0) {
+			customNumbers = [...customNumbers, ...validNumbers].sort((a, b) => a - b);
+			newCustomNumber = '';
+		}
+	}
+
+	function removeCustomNumber(num: number) {
+		customNumbers = customNumbers.filter((n) => n !== num);
+	}
 
 	async function calculate() {
 		result = [];
@@ -32,10 +55,11 @@
 				targetNumber,
 				highestExtractionSource,
 				operator_array,
-				reuse_generated_values
+				reuse_generated_values,
+				customNumbers
 			);
 		} else {
-			result = leastSteps(targetNumber, highestExtractionSource, operator_array);
+			result = leastSteps(targetNumber, highestExtractionSource, operator_array, customNumbers);
 		}
 
 		calculating = false;
@@ -66,6 +90,37 @@
 				type="number"
 				placeholder="9"
 			/>
+		</div>
+		<div class="mt-4 w-[70%]">
+			<p class="mb-2 grow flex-1">Custom Numbers:</p>
+			<div class="flex items-center gap-2">
+				<input
+					bind:value={newCustomNumber}
+					on:keydown={(e) => e.key === 'Enter' && addCustomNumber()}
+					class="input h-10 flex-1"
+					type="text"
+					placeholder="Add number(s), e.g., 5 or 5;10;15"
+				/>
+				<button
+					on:click={addCustomNumber}
+					class="btn variant-filled-primary h-10 aspect-square p-0 flex items-center justify-center"
+				>
+					<Plus size={20} />
+				</button>
+			</div>
+			<p class="opacity-60 text-sm mt-1">Numbers you already have built in the game (separate multiple with semicolons)</p>
+			{#if customNumbers.length > 0}
+				<div class="mt-2 flex flex-wrap gap-2">
+					{#each customNumbers as num}
+						<div class="card variant-filled-surface p-2 flex items-center gap-2">
+							<span>{num}</span>
+							<button on:click={() => removeCustomNumber(num)} class="opacity-60 hover:opacity-100">
+								<X size={16} />
+							</button>
+						</div>
+					{/each}
+				</div>
+			{/if}
 		</div>
 		<p class="mt-4 grow flex-1">Operators:</p>
 		<div class="flex items-center mt-1 w-[70%]">
