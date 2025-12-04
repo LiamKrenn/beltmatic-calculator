@@ -6,10 +6,17 @@ type QueueItem = {
 	operand: number | null;
 };
 
-export function leastSteps(target: number, max_src: number, allowedOperators: string[]) {
-	const allowedNumbers = Array.from({ length: max_src }, (_, i) => i + 1).filter(
+export function leastSteps(
+	target: number,
+	max_src: number,
+	allowedOperators: string[],
+	customNumbers: number[] = []
+) {
+	const baseNumbers = Array.from({ length: max_src }, (_, i) => i + 1).filter(
 		(num) => num !== 10
 	);
+	// Combine base numbers with custom numbers, remove duplicates
+	const allowedNumbers = Array.from(new Set([...baseNumbers, ...customNumbers]));
 
 	const forwardVisited = new Map<number, QueueItem>();
 	const backwardVisited = new Map<number, QueueItem>();

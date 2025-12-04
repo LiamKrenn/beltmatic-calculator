@@ -8,11 +8,14 @@ export function leastSteps(
 	target: number,
 	max_src: number,
 	allowedOperators: string[],
-	reuse_generated_values: boolean = false
+	reuse_generated_values: boolean = false,
+	customNumbers: number[] = []
 ) {
-	const allowedNumbers = Array.from({ length: max_src }, (_, i) => i + 1).filter(
+	const baseNumbers = Array.from({ length: max_src }, (_, i) => i + 1).filter(
 		(num) => num !== 10
 	);
+	// Combine base numbers with custom numbers, remove duplicates
+	const allowedNumbers = Array.from(new Set([...baseNumbers, ...customNumbers]));
 
 	const forwardVisited = new Map<number, QueueItem>();
 	const backwardVisited = new Map<number, QueueItem>();
